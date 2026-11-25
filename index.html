@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEET 2027 Digital Mock Exam (CBT)</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,Segoe UI,Arial,sans-serif;background:#eef2f7;color:#16202e;user-select:none;-webkit-user-select:none}
+input,textarea{user-select:text;-webkit-user-select:text}
+.scr{display:none;min-height:100vh;padding:16px}.scr.on{display:block}
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 6px #0002;padding:20px;max-width:900px;margin:16px auto}
+h1,h2{margin:.2em 0}.sub{color:#556}
+input,select,textarea{width:100%;padding:9px;margin:4px 0 12px;border:1px solid #aab;border-radius:6px;font:inherit}
+button{font:inherit;padding:9px 16px;border:0;border-radius:6px;background:#1d4ed8;color:#fff;cursor:pointer}
+button.g{background:#16a34a}button.o{background:#d97706}button.r{background:#dc2626}button.l{background:#e2e8f0;color:#16202e}
+button:disabled{opacity:.5}
+.rules li{margin:3px 0}
+#bar{display:flex;justify-content:space-between;align-items:center;background:#0f2a5c;color:#fff;padding:10px 16px;border-radius:8px;gap:10px;flex-wrap:wrap}
+#timer{font:700 22px monospace;background:#fff2;padding:4px 12px;border-radius:6px}
+#ban{display:none;background:#dc2626;color:#fff;text-align:center;font-weight:700;padding:8px;margin:8px 0;border-radius:6px;animation:fl 1s infinite}
+@keyframes fl{50%{opacity:.35}}
+#main{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
+#qp{flex:3;min-width:300px;background:#fff;border-radius:10px;padding:18px}
+#pp{flex:1;min-width:240px;background:#fff;border-radius:10px;padding:14px}
+.tabs button{background:#e2e8f0;color:#16202e;margin-right:6px}.tabs button.a{background:#1d4ed8;color:#fff}
+.opt{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:#f8fafc;color:#16202e;border:2px solid #cbd5e1;margin:8px 0;padding:11px}
+.opt.s{border-color:#1d4ed8;background:#dbeafe}
+.opt b{display:inline-block;width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;background:#cbd5e1}
+.opt.s b{background:#1d4ed8;color:#fff}
+#grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+#grid button{padding:8px 0;background:#cbd5e1;color:#16202e}
+#grid .s1{background:#ef4444;color:#fff}#grid .s2{background:#22c55e;color:#fff}#grid .s3{background:#7c3aed;color:#fff}#grid .s4{background:#7c3aed;color:#fff;box-shadow:inset 0 0 0 3px #22c55e}#grid .cur{outline:3px solid #0f2a5c}
+.lg span{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:middle}
+.ov{display:none;position:fixed;inset:0;background:#000b;z-index:9;align-items:center;justify-content:center;padding:16px}
+.ov .card{max-width:480px;text-align:center}
+table{border-collapse:collapse;width:100%;font-size:13px}td,th{border:1px solid #ccd;padding:5px;text-align:left}
+.qa{border-bottom:1px solid #dde;padding:8px 0}.ok{color:#15803d;font-weight:700}
+@media print{.noprint{display:none!important}body{background:#fff}body.exam *{display:none!important}}
+</style></head><body>
+
+<!-- START -->
+<div id="start" class="scr on"><div class="card">
+<h1>NEET 2027 Digital Mock Exam</h1><div class="sub">Computer-Based Test (CBT) &middot; Physics &middot; Chemistry &middot; Biology</div><hr>
+<label>Candidate Name</label><input id="nm" autocomplete="off">
+<label>Roll / ID Number</label><input id="rl" autocomplete="off">
+<label>Batch</label><input id="bt" autocomplete="off">
+<label>Duration</label><select id="du"><option value="180">180 minutes (full test)</option><option value="6">6 minutes (quick test: 5-minute bell fires after 1 min)</option></select>
+<h3>Exam Rules</h3>
+<ul class="rules">
+<li>3 separate modules: <b>Physics</b>, <b>Chemistry</b>, <b>Biology</b> (<span id="cnt"></span> questions, <span id="mk"></span> marks in this paper).</li>
+<li>Marking: <b>+4</b> correct, <b>&minus;1</b> incorrect, <b>0</b> unattempted.</li>
+<li>The exam runs in <b>fullscreen</b>. Switching tabs, minimising, changing screens or exiting fullscreen is a violation: <b>2 strikes and the exam is terminated and submitted automatically</b>.</li>
+<li>Right-click, copy/paste, print and developer-tool shortcuts are disabled.</li>
+<li>An audible bell and a warning banner appear at 5 minutes remaining. The exam auto-submits at 00:00.</li>
+<li>Answers and scores are not shown to candidates. Download your response receipt after submission and hand it to your teacher.</li>
+</ul>
+<button class="g" onclick="startExam()">Start Exam &amp; Enter Fullscreen</button>
+<button class="l" style="float:right" onclick="show('tl')">Teacher Portal</button>
+<p id="er" style="color:#dc2626"></p>
+</div></div>
+
+<!-- EXAM -->
+<div id="exam" class="scr">
+<div id="bar"><div><b id="who"></b></div><div class="tabs" id="tabs"></div><div>Time left <span id="timer">--:--</span></div></div>
+<div id="ban">&#9888; ONLY 5 MINUTES REMAINING &mdash; THE EXAM WILL AUTO-SUBMIT AT 00:00</div>
+<div id="main">
+<div id="qp"><div id="qh" class="sub"></div><h3 id="qt"></h3><div id="qo"></div>
+<div style="margin-top:14px"><button class="g" onclick="save()">Save &amp; Next</button>
+<button class="o" onclick="mark()">Mark for Review &amp; Next</button>
+<button class="l" onclick="clr()">Clear Response</button></div></div>
+<div id="pp"><div id="gt"><b></b></div><div id="grid"></div>
+<div class="lg" style="margin-top:12px;font-size:12px"><span style="background:#cbd5e1"></span>Not Visited<br><span style="background:#ef4444"></span>Not Answered<br><span style="background:#22c55e"></span>Answered<br><span style="background:#7c3aed"></span>Marked for Review<br><span style="background:#7c3aed;box-shadow:inset 0 0 0 2px #22c55e"></span>Answered &amp; Marked</div>
+<div id="sm" style="margin-top:10px;font-size:13px"></div>
+<button class="r" style="margin-top:12px;width:100%" onclick="$('conf').style.display='flex'">Submit Exam</button></div>
+</div></div>
+
+<!-- DONE -->
+<div id="done" class="scr"><div class="card"><h2>Exam Submitted</h2>
+<p id="dm"></p><p>Your responses have been recorded.</p><div id="res"></div>
+<p><b>Verification ID:</b> <code id="vid"></code></p>
+<button class="g" onclick="dl()">Download Response Receipt (.json)</button>
+<p class="sub">Give this file to your teacher. Do not edit it: any change invalidates the verification hash.</p></div></div>
+
+<!-- TEACHER -->
+<div id="tl" class="scr"><div class="card noprint"><h2>Teacher Portal</h2>
+<label>Teacher passcode</label><input id="pc" type="password" onkeydown="if(event.key==='Enter')unlock()">
+<button onclick="unlock()">Unlock</button> <button class="l" onclick="show('start')">Back</button>
+<p id="pe" style="color:#dc2626"></p></div></div>
+<div id="tp" class="scr"><div class="card" style="max-width:1100px">
+<div class="noprint"><h2>Teacher Portal</h2>
+<button onclick="tab('ak')">Answer Sheet &amp; Solutions</button> <button onclick="tab('gr')">Grade Receipts</button>
+<button class="l" onclick="K=null;show('start')">Lock &amp; Exit</button></div>
+<div id="ak"></div>
+<div id="gr" style="display:none" class="noprint">
+<h3>Upload or paste student receipts</h3>
+<input type="file" id="fl" accept=".json" multiple onchange="loadFiles(this.files)">
+<textarea id="ta" rows="4" placeholder="Or paste receipt JSON here"></textarea>
+<button onclick="pasteGrade()">Grade pasted receipt</button> <button class="g" onclick="csv()">Export CSV</button> <button class="l" onclick="R=[];renderRes()">Clear</button>
+<div style="overflow:auto"><table id="rs"></table></div></div>
+</div></div>
+
+<!-- OVERLAYS -->
+<div id="warn" class="ov"><div class="card"><h2 style="color:#dc2626">&#9888; Violation Detected</h2><p id="wm"></p>
+<button class="r" onclick="$('warn').style.display='none';fs()">Return to Exam</button></div></div>
+<div id="conf" class="ov"><div class="card"><h2>Submit exam?</h2><p>You cannot change your answers after submitting.</p>
+<button class="r" onclick="submit('Submitted by candidate')">Yes, submit</button> <button class="l" onclick="$('conf').style.display='none'">Cancel</button></div></div>
+
+<script>
+const QB={"P": [{"q": "A projectile is launched at 30° to the horizontal with speed 20 m/s (g = 10 m/s²). Its horizontal range is closest to:", "o": ["17.3 m", "34.6 m", "40 m", "20 m"], "t": "Moderate"}, {"q": "A 12 V cell of internal resistance 2 Ω drives 6 Ω and 3 Ω resistors connected in parallel. Current through the 6 Ω resistor is:", "o": ["0.5 A", "2 A", "3 A", "1 A"], "t": "Tough"}, {"q": "A solid sphere and a hollow thin-walled sphere of equal mass and radius roll without slipping down the same incline. The ratio of their accelerations (solid : hollow) is:", "o": ["25 : 21", "21 : 25", "5 : 3", "7 : 5"], "t": "Tough"}, {"q": "Light of wavelength 400 nm falls on a metal of work function 2.0 eV (hc = 1240 eV·nm). The stopping potential is:", "o": ["3.1 V", "2.0 V", "1.1 V", "0.9 V"], "t": "Tough"}, {"q": "A Carnot engine with sink at 300 K has 40% efficiency. To raise efficiency to 50% with the source unchanged, the sink temperature must become:", "o": ["275 K", "200 K", "250 K", "150 K"], "t": "Tough"}, {"q": "In a series LCR circuit R = 30 Ω, XL = 60 Ω and XC = 20 Ω. The power factor is:", "o": ["0.8", "0.5", "1", "0.6"], "t": "Moderate"}], "C": [{"q": "The pH of 0.01 M H2SO4 (assuming complete dissociation of both protons, log 2 = 0.3) is:", "o": ["2.0", "1.7", "1.3", "1.0"], "t": "Tough"}, {"q": "The number of unpaired electrons in the low-spin complex [Fe(CN)6]³⁻ is:", "o": ["5", "3", "1", "0"], "t": "Tough"}, {"q": "Dehydration of butan-2-ol with conc. H2SO4 at 443 K gives mainly:", "o": ["But-1-ene", "But-2-ene", "Butanal", "Butan-2-one"], "t": "Moderate"}, {"q": "Which 0.1 m aqueous solution shows the highest boiling point (assume complete dissociation)?", "o": ["Glucose", "NaCl", "K2SO4", "AlCl3"], "t": "Tough"}, {"q": "For a zero-order reaction with [A]0 = 0.8 M and k = 0.02 M min⁻¹, the half-life is:", "o": ["40 min", "10 min", "20 min", "80 min"], "t": "Tough"}, {"q": "The bond order of the superoxide ion O2⁻ is:", "o": ["1.5", "2", "2.5", "1"], "t": "Moderate"}], "B": [{"q": "Which enzyme seals the nicks between Okazaki fragments on the lagging strand?", "o": ["DNA polymerase III", "DNA ligase", "Primase", "Helicase"], "t": "Moderate"}, {"q": "A test cross AaBb × aabb with independent assortment gives a phenotypic ratio of:", "o": ["9 : 3 : 3 : 1", "3 : 1", "1 : 2 : 1", "1 : 1 : 1 : 1"], "t": "Tough"}, {"q": "In C4 plants the primary CO2 acceptor and the carboxylating enzyme in mesophyll cells are respectively:", "o": ["RuBP and RuBisCO", "PEP and PEP carboxylase", "PEP and RuBisCO", "RuBP and PEP carboxylase"], "t": "Tough"}, {"q": "In a population at Hardy-Weinberg equilibrium 16% show a recessive phenotype. The frequency of heterozygotes is:", "o": ["0.24", "0.36", "0.48", "0.60"], "t": "Tough"}, {"q": "Ovulation in the human menstrual cycle is directly triggered by:", "o": ["A surge of LH", "A surge of FSH", "A fall in estrogen", "A rise in progesterone"], "t": "Moderate"}, {"q": "The sodium-potassium pump of a neuron moves, per cycle:", "o": ["2 Na⁺ out and 3 K⁺ in", "3 Na⁺ in and 2 K⁺ out", "3 Na⁺ out and 2 K⁺ in", "2 Na⁺ in and 3 K⁺ out"], "t": "Tough"}]}, KEY="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", AK={"P": [1, 3, 0, 2, 2, 3], "C": [1, 2, 1, 3, 2, 0], "B": [1, 3, 1, 2, 0, 2]}, SALT="n27-mock-v1", MAX=2;
+const SUB={P:"Physics",C:"Chemistry",B:"Biology"}, $=id=>document.getElementById(id);
+const NQ=Object.values(QB).reduce((n,a)=>n+a.length,0), MARKS=NQ*4;
+$("cnt").textContent=NQ;$("mk").textContent=MARKS;
+let S=null,K=null,R=[],actx=null,tm=null;
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const H=s=>{let a=0xdeadbeef,b=0x41c6ce57;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);a=Math.imul(a^c,2654435761);b=Math.imul(b^c,1597334677)}
+a=Math.imul(a^(a>>>16),2246822507)^Math.imul(b^(b>>>13),3266489909);b=Math.imul(b^(b>>>16),2246822507)^Math.imul(a^(a>>>13),3266489909);
+return(4294967296*(2097151&b)+(a>>>0)).toString(16).toUpperCase()};
+const show=id=>{document.querySelectorAll(".scr").forEach(e=>e.classList.toggle("on",e.id===id))};
+const live=()=>S&&S.started&&!S.done;
+const fs=()=>{const e=document.documentElement;e.requestFullscreen&&e.requestFullscreen().catch(()=>{})};
+
+/* ---------- anti-cheat ---------- */
+document.addEventListener("contextmenu",e=>{if(live())e.preventDefault()});
+["copy","cut","paste","dragstart"].forEach(t=>document.addEventListener(t,e=>{if(live())e.preventDefault()}));
+document.addEventListener("keydown",e=>{if(!live())return;const k=e.key.toLowerCase();
+ if(e.key==="F12"||(e.ctrlKey&&["c","v","x","p","u","s","a"].includes(k))||(e.ctrlKey&&e.shiftKey&&["i","j","c"].includes(k))||(e.metaKey&&["c","v","x","p"].includes(k))){e.preventDefault();e.stopPropagation()}},true);
+const strike=why=>{if(!live()||S.lock)return;S.lock=true;setTimeout(()=>S.lock=false,1500);
+ S.viol.push({time:new Date().toISOString(),reason:why});
+ if(S.viol.length>=MAX){submit("Terminated: "+MAX+" screen-change violations");return}
+ $("wm").textContent="Strike "+S.viol.length+" of "+MAX+": "+why+". One more violation will terminate and submit your exam.";
+ $("warn").style.display="flex"};
+document.addEventListener("visibilitychange",()=>{if(document.hidden)strike("Tab or screen changed")});
+window.addEventListener("blur",()=>strike("Exam window lost focus"));
+document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement)strike("Exited fullscreen")});
+
+/* ---------- exam flow ---------- */
+function startExam(){
+ const n=$("nm").value.trim(),r=$("rl").value.trim(),b=$("bt").value.trim();
+ if(!n||!r||!b){$("er").textContent="Please enter name, roll/ID number and batch.";return}
+ try{actx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}
+ fs();
+ S={name:n,roll:r,batch:b,started:Date.now(),end:Date.now()+(+$("du").value)*60000,sub:"P",pos:0,ord:{},perm:{},ans:{},st:{},sel:null,viol:[],done:false,warned:false,lock:false};
+ for(const s in QB){S.ord[s]=sh(QB[s].map((_,i)=>i));QB[s].forEach((_,i)=>S.perm[s+i]=sh([0,1,2,3]))}
+ document.body.classList.add("exam");$("who").textContent=n+" ("+r+")";
+ show("exam");visit();render();tick();tm=setInterval(tick,500)}
+const qid=()=>S.sub+S.ord[S.sub][S.pos];
+function visit(){const id=qid();if(!S.st[id])S.st[id]=1;S.sel=S.ans[id]!==undefined?S.ans[id]:null}
+function render(){
+ $("tabs").innerHTML=Object.keys(SUB).map(s=>`<button class="${s===S.sub?"a":""}" onclick="goSub('${s}')">${SUB[s]}</button>`).join("");
+ const id=qid(),q=QB[S.sub][S.ord[S.sub][S.pos]];
+ $("qh").textContent=SUB[S.sub]+" \u2022 Question "+(S.pos+1)+" of "+QB[S.sub].length+" \u2022 +4 / \u22121";
+ $("qt").textContent=q.q;
+ $("qo").innerHTML=S.perm[id].map((o,k)=>`<button class="opt ${S.sel===o?"s":""}" onclick="pick(${o})"><b>${"ABCD"[k]}</b><span>${q.o[o]}</span></button>`).join("");
+ $("gt").innerHTML="<b>"+SUB[S.sub]+" palette</b>";
+ $("grid").innerHTML=S.ord[S.sub].map((qi,p)=>`<button class="s${S.st[S.sub+qi]||0} ${p===S.pos?"cur":""}" onclick="go(${p})">${p+1}</button>`).join("");
+ const c=[0,0,0,0,0];Object.values(S.st).forEach(v=>c[v]++);c[0]=NQ-c[1]-c[2]-c[3]-c[4];
+ $("sm").innerHTML="Answered: "+(c[2]+c[4])+" | Not answered: "+c[1]+" | Marked: "+(c[3]+c[4])+" | Not visited: "+c[0]}
+const pick=o=>{S.sel=o;render()};
+const go=p=>{S.pos=p;visit();render()};
+const goSub=s=>{S.sub=s;S.pos=0;visit();render()};
+function next(){const keys=Object.keys(SUB);
+ if(S.pos<QB[S.sub].length-1)S.pos++;else{S.sub=keys[(keys.indexOf(S.sub)+1)%keys.length];S.pos=0}
+ visit();render()}
+function save(){const id=qid();if(S.sel!==null){S.ans[id]=S.sel;S.st[id]=2}else{delete S.ans[id];S.st[id]=1}next()}
+function mark(){const id=qid();if(S.sel!==null){S.ans[id]=S.sel;S.st[id]=4}else{delete S.ans[id];S.st[id]=3}next()}
+function clr(){const id=qid();delete S.ans[id];S.sel=null;S.st[id]=1;render()}
+
+/* ---------- timer & bell ---------- */
+function beep(f,t){if(!actx)return;const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f;o.connect(g);g.connect(actx.destination);
+ const s=actx.currentTime+t;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.4,s+.03);g.gain.exponentialRampToValueAtTime(.0001,s+.3);o.start(s);o.stop(s+.32)}
+const bell=()=>{[880,1100,880,1100,1320].forEach((f,i)=>beep(f,i*.4))};
+function tick(){if(!live())return;const r=S.end-Date.now();
+ if(r<=0){submit("Time up: auto-submitted");return}
+ const t=Math.ceil(r/1000);$("timer").textContent=String(t/3600|0).padStart(2,"0")+":"+String(t%3600/60|0).padStart(2,"0")+":"+String(t%60).padStart(2,"0");
+ if(r<=300000){$("timer").style.background="#dc2626";if(!S.warned){S.warned=true;$("ban").style.display="block";bell();setTimeout(()=>{if(live())bell()},4000)}}}
+
+/* ---------- submission ---------- */
+function submit(reason){
+ if(!S||S.done)return;S.done=true;clearInterval(tm);
+ const payload={exam:"NEET 2027 Mock",name:S.name,roll:S.roll,batch:S.batch,answers:S.ans,startedAt:new Date(S.started).toISOString(),submittedAt:new Date().toISOString(),secondsTaken:Math.round((Date.now()-S.started)/1000),endReason:reason,violations:S.viol};
+ S.receipt={payload,hash:H(JSON.stringify(payload)+SALT)};
+ document.body.classList.remove("exam");$("warn").style.display="none";$("conf").style.display="none";
+ if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+ $("dm").textContent=reason;showResult(payload);$("vid").textContent=S.receipt.hash;show("done");setTimeout(dl,600)}
+function showResult(p){
+ if(!AK){$("res").innerHTML="<p>Results will be released by your teacher.</p>";return}
+ let tot=0,att=0,cor=0,rows="";
+ for(const s in QB){let c=0,w=0,u=0;QB[s].forEach((_,i)=>{const a=p.answers[s+i];if(a===undefined)u++;else if(a===AK[s][i])c++;else w++});
+  const sc=c*4-w;tot+=sc;att+=c+w;cor+=c;
+  rows+=`<tr><td>${SUB[s]}</td><td>${c}</td><td>${w}</td><td>${u}</td><td><b>${sc}</b> / ${QB[s].length*4}</td></tr>`}
+ $("res").innerHTML=`<h3>Your Result</h3><div style="font-size:30px;font-weight:700;color:#1d4ed8">${tot} / ${MARKS}</div>
+ <p>Attempted: ${att} &bull; Correct: ${cor} &bull; Accuracy: ${att?Math.round(cor/att*100):0}%</p>
+ <table><tr><th>Subject</th><th>Correct (+4)</th><th>Wrong (&minus;1)</th><th>Unattempted</th><th>Marks</th></tr>${rows}</table>`}
+function dl(){const b=new Blob([JSON.stringify(S.receipt,null,1)],{type:"application/json"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(b);a.download="receipt_"+S.roll.replace(/\W+/g,"_")+".json";a.click()}
+
+/* ---------- teacher portal ---------- */
+function unlock(){const pw=new TextEncoder().encode($("pc").value||"x");
+ try{const raw=Uint8Array.from(atob(KEY),c=>c.charCodeAt(0));const txt=new TextDecoder().decode(raw.map((c,i)=>c^pw[i%pw.length]));
+  if(!txt.startsWith("NEET27:"))throw 0;K=JSON.parse(txt.slice(7))}catch(e){$("pe").textContent="Wrong passcode.";return}
+ $("pc").value="";$("pe").textContent="";show("tp");tab("ak");renderKey()}
+function tab(t){$("ak").style.display=t==="ak"?"block":"none";$("gr").style.display=t==="gr"?"block":"none"}
+function renderKey(){let h="<h2>Answer Sheet &amp; Solutions (Teacher Copy)</h2><button class='noprint' onclick='window.print()'>Print</button>";
+ for(const s in QB){h+="<h3>"+SUB[s]+"</h3>";QB[s].forEach((q,i)=>{const k=K[s][i];
+  h+=`<div class="qa"><b>${s}${i+1}.</b> ${q.q} <i>[${q.t}]</i><br>${q.o.map((o,j)=>(j===k.a?`<span class="ok">`:"<span>")+"("+"ABCD"[j]+") "+o+"</span>").join(" &nbsp; ")}<br><b>Answer: ${"ABCD"[k.a]}</b> &mdash; ${k.s}</div>`})}
+ $("ak").innerHTML=h}
+function grade(r){const p=r.payload;let ok=H(JSON.stringify(p)+SALT)===r.hash,tot=0,att=0,cor=0,sc={};
+ for(const s in QB){sc[s]=0;QB[s].forEach((_,i)=>{const a=p.answers[s+i];if(a===undefined)return;att++;if(a===K[s][i].a){cor++;sc[s]+=4}else sc[s]-=1});tot+=sc[s]}
+ return{name:p.name,roll:p.roll,batch:p.batch,P:sc.P,C:sc.C,B:sc.B,tot,att,acc:att?Math.round(cor/att*100):0,viol:p.violations.length,why:p.endReason,ok}}
+function addReceipt(t){try{let j=JSON.parse(t);(Array.isArray(j)?j:[j]).forEach(r=>R.push(grade(r)))}catch(e){alert("Invalid receipt file")}renderRes()}
+function loadFiles(fl){[...fl].forEach(f=>{const r=new FileReader();r.onload=()=>addReceipt(r.result);r.readAsText(f)})}
+function pasteGrade(){addReceipt($("ta").value);$("ta").value=""}
+function renderRes(){$("rs").innerHTML="<tr><th>Name</th><th>Roll</th><th>Batch</th><th>Physics</th><th>Chemistry</th><th>Biology</th><th>Total /"+MARKS+"</th><th>Attempted</th><th>Accuracy</th><th>Violations</th><th>End reason</th><th>Hash</th></tr>"+
+ R.map(x=>`<tr><td>${x.name}</td><td>${x.roll}</td><td>${x.batch}</td><td>${x.P}</td><td>${x.C}</td><td>${x.B}</td><td><b>${x.tot}</b></td><td>${x.att}</td><td>${x.acc}%</td><td style="color:${x.viol?"#dc2626":"inherit"}">${x.viol}</td><td>${x.why}</td><td>${x.ok?"Valid":"<b style='color:#dc2626'>TAMPERED</b>"}</td></tr>`).join("")}
+function csv(){const rows=[["Name","Roll","Batch","Physics","Chemistry","Biology","Total","Max","Attempted","Accuracy%","Violations","EndReason","Hash"]].concat(R.map(x=>[x.name,x.roll,x.batch,x.P,x.C,x.B,x.tot,MARKS,x.att,x.acc,x.viol,x.why,x.ok?"Valid":"TAMPERED"]));
+ const b=new Blob([rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\n")],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="neet2027_results.csv";a.click()}
+</script></body></html>
